@@ -72,7 +72,6 @@ class qformat_glossary extends qformat_xml {
             $expout .= glossary_full_tag("CASESENSITIVE",4,false,get_config('core', 'glossary_casesensitive'));
             $expout .= glossary_full_tag("FULLMATCH",4,false,get_config('core', 'glossary_fullmatch'));
 
-
             $expout .= glossary_end_tag("ENTRY",3,true);
 
         }
@@ -130,25 +129,25 @@ class qformat_glossary extends qformat_xml {
                 $qo->qtype = 'shortanswer';
                 $qo->questiontextformat = $format;
                 $qo->questiontext = $definition;
-                $qo->name = $definition;
+                $qo->name = substr($definition, 0, 50);
                 $qo->answer[0] = $concept;
                 $qo->fraction[0] = 1;
                 $qo->feedback[0] = array();
                 $qo->feedback[0]['text'] = '';
                 $qo->feedback[0]['format'] = FORMAT_PLAIN;
 
+                // If there are aliases, add these as alternate answers.
                 $xmlaliases = @$xmlentry['#']['ALIASES'][0]['#']['ALIAS']; // ignore missing ALIASES
                 $sizeofxmlaliases = sizeof($xmlaliases);
                 for($k = 0; $k < $sizeofxmlaliases; $k++) {
                     $xmlalias = $xmlaliases[$k];
                     $aliasname = $xmlalias['#']['NAME'][0]['#'];
-                    $qo->answer[$k +1] = $aliasname;
+                    $qo->answer[$k + 1] = $aliasname;
                     $qo->fraction[$k + 1] = 1;
                     $qo->feedback[$k + 1] = array();
                     $qo->feedback[$k + 1]['text'] = '';
                     $qo->feedback[$k + 1]['format'] = FORMAT_PLAIN;
                 }
-
 
                 $questions[] = $qo;
             }
