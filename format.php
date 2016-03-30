@@ -119,7 +119,8 @@ class qformat_glossary extends qformat_xml {
 
     // Overwrite import methods.
     protected function readquestions($lines) {
-        $questions = array();
+        $uncategorizedquestions = array();
+        $categorizedquestions = array();
 
         // We just need it as one big string.
         $lines = implode('', $lines);
@@ -170,12 +171,27 @@ class qformat_glossary extends qformat_xml {
                     $qo->feedback[$k + 1]['format'] = FORMAT_PLAIN;
                 }
 
-                $questions[] = $qo;
+                $xmlcategories = $xmlentry['#']['CATEGORIES'][0]['#']['CATEGORY'];
+                if (!sizeof($xmlcategories)) {
+                    // If no categories are specified, place it in the current one.
+                    $uncategorizedquestions[] = $qo;
+                }
+                foreach ($xmlcategories as $category) {
+                    // Place copy in each category that is specified.
+                    $qc = $this->defaultquestion();
+                    $qc->qtype = 'category';
+                    $qc->category = trusttext_strip($category['#']['NAME'][0]['#']);
+                    $categorizedquestions[] = $qc;
+                    $categorizedquestions[] = $qo;
+                    if (!$this->catfromfile) {
+                        // If category is not used, make only one copy.
+                        break;
+                    }
+                }
             }
 
         }
-        return $questions;
+        return array_merge($uncategorizedquestions, $categorizedquestions);
     }
 
 }
-
