@@ -35,15 +35,24 @@ require_once($CFG->dirroot . '/question/format/xml/format.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qformat_glossary extends qformat_xml {
+    // Current category.
+    public $currentcategory = '';
 
     // Overwrite export methods.
     public function writequestion($question) {
         global $CFG;
         $expout = '';
+        if ($question->qtype == 'category') {
+           $category = preg_replace('/<\\/text>/', '', $this->writetext($question->category));
+           $category = preg_replace('/.*\\//', '', $category);
+           $category = trim($category);
+           $this->currentcategory = $category;
+        }
         if ($question->qtype == 'shortanswer' || $question->qtype == 'multichoice') {
             $expout .= glossary_start_tag("ENTRY",3,true);
             $answers = $question->options->answers;
             reset($answers);
+            // Concept is first right answer.
             while (current($answers)) {
                 if (current($answers)->fraction == 1) {
                     $expout .= glossary_full_tag("CONCEPT",4,false, trim(current($answers)->answer));
@@ -52,25 +61,37 @@ class qformat_glossary extends qformat_xml {
                 }
                 next($answers);
             }
-
-            $expout .= glossary_full_tag("DEFINITION",4,false,$question->questiontext);
-            $expout .= glossary_full_tag("FORMAT",4,false, $question->questiontextformat);
-
-            $expout .= glossary_start_tag("ALIASES",4,true);
+            // Other right answers are aliases.
+            $aliases = '';
             while (current($answers)) {
                 if (current($answers)->fraction == 1) {
-                    $expout .= glossary_start_tag("ALIAS",5,true);
-                    $expout .= glossary_full_tag("NAME",6,false,trim(current($answers)->answer));
-                    $expout .= glossary_end_tag("ALIAS",5,true);
+                    $aliases .= glossary_start_tag("ALIAS",5,true);
+                    $aliases .= glossary_full_tag("NAME",6,false,trim(current($answers)->answer));
+                    $aliases .= glossary_end_tag("ALIAS",5,true);
 
                 }
                 next($answers);
             }
-            $expout .= glossary_end_tag("ALIASES",4,true);
 
+            $expout .= glossary_full_tag("DEFINITION",4,false,$question->questiontext);
+            $expout .= glossary_full_tag("FORMAT",4,false, $question->questiontextformat);
             $expout .= glossary_full_tag("USEDYNALINK",4,false,get_config('core', 'glossary_linkentries'));
             $expout .= glossary_full_tag("CASESENSITIVE",4,false,get_config('core', 'glossary_casesensitive'));
             $expout .= glossary_full_tag("FULLMATCH",4,false,get_config('core', 'glossary_fullmatch'));
+            $expout .= glossary_full_tag("TEACHERENTRY",4,false, $question->questiontextformat);
+
+            if ($aliases) {
+                $expout .= glossary_start_tag("ALIASES",4,false);
+                $expout .= $aliases;
+                $expout .= glossary_end_tag("ALIASES",4,false);
+            }
+
+            $expout .= glossary_start_tag("CATEGORIES",4,true);
+            $expout .= glossary_start_tag("CATEGORY",5,true);
+            $expout .= glossary_full_tag('NAME', 6, false, $this->currentcategory);
+            $expout .= glossary_full_tag('USEDYNALINK', 6, false, 0);
+            $expout .= glossary_end_tag("CATEGORY",5,true);
+            $expout .= glossary_end_tag("CATEGORIES",4,true);
 
             $expout .= glossary_end_tag("ENTRY",3,true);
 
