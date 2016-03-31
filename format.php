@@ -142,7 +142,7 @@ class qformat_glossary extends qformat_xml {
             for($i = 0; $i < $sizeofxmlentries; $i++) {
                 // Extract entry information.
                 $xmlentry = $xmlentries[$i];
-                $concept = trim($xmlentry['#']['CONCEPT'][0]['#']);
+                $concept = trim(trusttext_strip($xmlentry['#']['CONCEPT'][0]['#']));
                 $definition = trusttext_strip($xmlentry['#']['DEFINITION'][0]['#']);
                 $format = trusttext_strip($xmlentry['#']['FORMAT'][0]['#']);
 
@@ -151,7 +151,10 @@ class qformat_glossary extends qformat_xml {
                 $qo->qtype = 'shortanswer';
                 $qo->questiontextformat = $format;
                 $qo->questiontext = $definition;
-                $qo->name = substr($definition, 0, 50);
+                $qo->name = s(substr(utf8_decode($definition), 0, 50));
+                if ($format == FORMAT_HTML) {
+                    $qo->name = s(substr(utf8_decode(html_to_text($definition)), 0, 50));
+                }
                 $qo->answer[0] = $concept;
                 $qo->fraction[0] = 1;
                 $qo->feedback[0] = array();
@@ -163,7 +166,7 @@ class qformat_glossary extends qformat_xml {
                 $sizeofxmlaliases = sizeof($xmlaliases);
                 for($k = 0; $k < $sizeofxmlaliases; $k++) {
                     $xmlalias = $xmlaliases[$k];
-                    $aliasname = $xmlalias['#']['NAME'][0]['#'];
+                    $aliasname = trim(trusttext_strip($xmlalias['#']['NAME'][0]['#']));
                     $qo->answer[$k + 1] = $aliasname;
                     $qo->fraction[$k + 1] = 1;
                     $qo->feedback[$k + 1] = array();
