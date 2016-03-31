@@ -86,6 +86,7 @@ class qformat_glossary extends qformat_xml {
                 $expout .= glossary_end_tag("ALIASES",4,false);
             }
 
+            $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4, $question->contextid, 'questiontext', $question->id);
             $expout .= glossary_start_tag("CATEGORIES",4,true);
             $expout .= glossary_start_tag("CATEGORY",5,true);
             $expout .= glossary_full_tag('NAME', 6, false, $this->currentcategory);
@@ -98,6 +99,27 @@ class qformat_glossary extends qformat_xml {
         }
         return $expout;
     }
+
+    //  Duplicate function from glossay with  module  name changed to question.
+    function glossary_xml_export_files($tag, $taglevel, $contextid, $filearea, $itemid) {
+        $co = '';
+        $fs = get_file_storage();
+        if ($files = $fs->get_area_files(
+            $contextid, 'question', $filearea, $itemid, 'itemid,filepath,filename', false)) {
+            $co .= glossary_start_tag($tag, $taglevel, true);
+            foreach ($files as $file) {
+                $co .= glossary_start_tag('FILE', $taglevel + 1, true);
+                $co .= glossary_full_tag('FILENAME', $taglevel + 2, false, $file->get_filename());
+                $co .= glossary_full_tag('FILEPATH', $taglevel + 2, false, $file->get_filepath());
+                $co .= glossary_full_tag('CONTENTS', $taglevel + 2, false, base64_encode($file->get_content()));
+                $co .= glossary_end_tag('FILE', $taglevel + 1);
+            }
+            $co .= glossary_end_tag($tag, $taglevel);
+        }
+        return $co;
+    }
+
+
 
     protected function presave_process($content) {
         // Override to add xml headers and footers and the global glossary settings.
