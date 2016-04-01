@@ -203,10 +203,12 @@ class qformat_glossary extends qformat_xml {
                     $qo->feedback[$k + 1]['format'] = FORMAT_PLAIN;
                 }
 
-                $xmlcategories = $xmlentry['#']['CATEGORIES'][0]['#']['CATEGORY'];
-                if (!sizeof($xmlcategories)) {
+                if (array_key_exists('CATEGORIES', $xmlentry['#'])) {
+                    $xmlcategories = $xmlentry['#']['CATEGORIES'][0]['#']['CATEGORY'];
+                } else {
                     // If no categories are specified, place it in the current one.
                     $uncategorizedquestions[] = $qo;
+                    $xmlcategories = array();
                 }
                 foreach ($xmlcategories as $category) {
                     // Place copy in each category that is specified.
