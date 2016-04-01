@@ -100,7 +100,7 @@ class qformat_glossary extends qformat_xml {
         return $expout;
     }
 
-    //  Duplicate function from glossay with  module  name changed to question.
+    //  Duplicate function from glossary with component name changed to question.
     function glossary_xml_export_files($tag, $taglevel, $contextid, $filearea, $itemid) {
         $co = '';
         $fs = get_file_storage();
@@ -118,8 +118,6 @@ class qformat_glossary extends qformat_xml {
         }
         return $co;
     }
-
-
 
     protected function presave_process($content) {
         // Override to add xml headers and footers and the global glossary settings.
@@ -173,6 +171,11 @@ class qformat_glossary extends qformat_xml {
                 $qo->qtype = 'shortanswer';
                 $qo->questiontextformat = $format;
                 $qo->questiontext = $definition;
+
+                // Import files embedded in the entry text.
+                $questiontext = $this->import_text_with_files($xmlentry,
+                    array());
+                $qo->questiontext = $questiontext['text'];
                 $qo->name = s(substr(utf8_decode($definition), 0, 50));
                 if ($format == FORMAT_HTML) {
                     $qo->name = s(substr(utf8_decode(html_to_text($definition)), 0, 50));
@@ -182,6 +185,10 @@ class qformat_glossary extends qformat_xml {
                 $qo->feedback[0] = array();
                 $qo->feedback[0]['text'] = '';
                 $qo->feedback[0]['format'] = FORMAT_PLAIN;
+
+                if (!empty($questiontext['itemid'])) {
+                    $qo->questiontextitemid = $questiontext['itemid'];
+                }
 
                 // If there are aliases, add these as alternate answers.
                 $xmlaliases = @$xmlentry['#']['ALIASES'][0]['#']['ALIAS']; // ignore missing ALIASES
@@ -217,6 +224,53 @@ class qformat_glossary extends qformat_xml {
 
         }
         return array_merge($uncategorizedquestions, $categorizedquestions);
+    }
+
+    // Overwrite this method from xml import.
+    public function import_text_with_files($data, $path, $defaultvalue = '', $defaultformat = 'html') {
+        $field  = array();
+        $field['text'] = $this->getpath($data,
+                array_merge($path, array('#', 'DEFINITION', 0, '#')), $defaultvalue, true);
+        $field['format'] = $this->trans_format($this->getpath($data,
+                array_merge($path, array('@', 'FORMAT')), $defaultformat));
+        $itemid = $this->import_files_as_draft($this->getpath($data,
+                array_merge($path, array('#', 'ENTRYFILES', 0, '#', 'FILE')), array(), false));
+        if (!empty($itemid)) {
+            $field['itemid'] = $itemid;
+        }
+        return $field;
+    }
+
+    // Overwrite this method from xml import.
+    public function import_files_as_draft($xml) {
+        global $USER;
+        if (empty($xml)) {
+            return null;
+        }
+        $fs = get_file_storage();
+        $itemid = file_get_unused_draft_itemid();
+        $filepaths = array();
+        foreach ($xml as $file) {
+            $filename = $this->getpath($file, array('#', 'FILENAME', 0, '#'), '', true);
+            $filepath = $this->getpath($file, array('#', 'FILEPATH', 0, '#'), '/', true);
+            $contents = $this->getpath($file, array('#', 'CONTENTS', 0, '#'), '/', true);
+            $fullpath = $filepath . $filename;
+            if (in_array($fullpath, $filepaths)) {
+                debugging('Duplicate file in XML: ' . $fullpath, DEBUG_DEVELOPER);
+                continue;
+            }
+            $filerecord = array(
+                'contextid' => context_user::instance($USER->id)->id,
+                'component' => 'user',
+                'filearea'  => 'draft',
+                'itemid'    => $itemid,
+                'filepath'  => $filepath,
+                'filename'  => $filename,
+            );
+            $fs->create_file_from_string($filerecord, base64_decode($contents));
+            $filepaths[] = $fullpath;
+        }
+        return $itemid;
     }
 
 }
