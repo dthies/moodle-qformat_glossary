@@ -162,51 +162,12 @@ class qformat_glossary extends qformat_xml {
             for($i = 0; $i < $sizeofxmlentries; $i++) {
                 // Extract entry information.
                 $xmlentry = $xmlentries[$i];
-                $concept = trim(trusttext_strip($xmlentry['#']['CONCEPT'][0]['#']));
-                $definition = trusttext_strip($xmlentry['#']['DEFINITION'][0]['#']);
-                $format = trusttext_strip($xmlentry['#']['FORMAT'][0]['#']);
-
-                // Create short answer question object from entry data.
-                $qo = $this->defaultquestion();
-                $qo->qtype = 'shortanswer';
-                $qo->questiontextformat = $format;
-                $qo->questiontext = $definition;
-
-                // Import files embedded in the entry text.
-                $questiontext = $this->import_text_with_files($xmlentry,
-                    array());
-                $qo->questiontext = $questiontext['text'];
-                $qo->name = s(substr(utf8_decode($definition), 0, 50));
-                if ($format == FORMAT_HTML) {
-                    $qo->name = s(substr(utf8_decode(html_to_text($definition)), 0, 50));
-                }
-                $qo->answer[0] = $concept;
-                $qo->fraction[0] = 1;
-                $qo->feedback[0] = array();
-                $qo->feedback[0]['text'] = '';
-                $qo->feedback[0]['format'] = FORMAT_PLAIN;
-
-                if (!empty($questiontext['itemid'])) {
-                    $qo->questiontextitemid = $questiontext['itemid'];
-                }
-
-                // If there are aliases, add these as alternate answers.
-                $xmlaliases = @$xmlentry['#']['ALIASES'][0]['#']['ALIAS']; // ignore missing ALIASES
-                $sizeofxmlaliases = sizeof($xmlaliases);
-                for($k = 0; $k < $sizeofxmlaliases; $k++) {
-                    $xmlalias = $xmlaliases[$k];
-                    $aliasname = trim(trusttext_strip($xmlalias['#']['NAME'][0]['#']));
-                    $qo->answer[$k + 1] = $aliasname;
-                    $qo->fraction[$k + 1] = 1;
-                    $qo->feedback[$k + 1] = array();
-                    $qo->feedback[$k + 1]['text'] = '';
-                    $qo->feedback[$k + 1]['format'] = FORMAT_PLAIN;
-                }
 
                 if (array_key_exists('CATEGORIES', $xmlentry['#'])) {
                     $xmlcategories = $xmlentry['#']['CATEGORIES'][0]['#']['CATEGORY'];
                 } else {
                     // If no categories are specified, place it in the current one.
+                    $qo = $this->import_headers($xmlentry);
                     $uncategorizedquestions[] = $qo;
                     $xmlcategories = array();
                 }
@@ -216,6 +177,7 @@ class qformat_glossary extends qformat_xml {
                     $qc->qtype = 'category';
                     $qc->category = trusttext_strip($category['#']['NAME'][0]['#']);
                     $categorizedquestions[] = $qc;
+                    $qo = $this->import_headers($xmlentry);
                     $categorizedquestions[] = $qo;
                     if (!$this->catfromfile) {
                         // If category is not used, make only one copy.
@@ -223,9 +185,53 @@ class qformat_glossary extends qformat_xml {
                     }
                 }
             }
-
         }
         return array_merge($uncategorizedquestions, $categorizedquestions);
+    }
+
+    function import_headers($xmlentry) {
+        $concept = trim(trusttext_strip($xmlentry['#']['CONCEPT'][0]['#']));
+        $definition = trusttext_strip($xmlentry['#']['DEFINITION'][0]['#']);
+        $format = trusttext_strip($xmlentry['#']['FORMAT'][0]['#']);
+
+        // Create short answer question object from entry data.
+        $qo = $this->defaultquestion();
+        $qo->qtype = 'shortanswer';
+        $qo->questiontextformat = $format;
+        $qo->questiontext = $definition;
+
+        // Import files embedded in the entry text.
+        $questiontext = $this->import_text_with_files($xmlentry,
+            array());
+        $qo->questiontext = $questiontext['text'];
+        $qo->name = s(substr(utf8_decode($definition), 0, 50));
+        if ($format == FORMAT_HTML) {
+            $qo->name = s(substr(utf8_decode(html_to_text($definition)), 0, 50));
+        }
+        $qo->answer[0] = $concept;
+        $qo->fraction[0] = 1;
+        $qo->feedback[0] = array();
+        $qo->feedback[0]['text'] = '';
+        $qo->feedback[0]['format'] = FORMAT_PLAIN;
+
+        if (!empty($questiontext['itemid'])) {
+            $qo->questiontextitemid = $questiontext['itemid'];
+        }
+
+        // If there are aliases, add these as alternate answers.
+        $xmlaliases = @$xmlentry['#']['ALIASES'][0]['#']['ALIAS']; // ignore missing ALIASES
+        $sizeofxmlaliases = sizeof($xmlaliases);
+        for($k = 0; $k < $sizeofxmlaliases; $k++) {
+            $xmlalias = $xmlaliases[$k];
+            $aliasname = trim(trusttext_strip($xmlalias['#']['NAME'][0]['#']));
+            $qo->answer[$k + 1] = $aliasname;
+            $qo->fraction[$k + 1] = 1;
+            $qo->feedback[$k + 1] = array();
+            $qo->feedback[$k + 1]['text'] = '';
+            $qo->feedback[$k + 1]['format'] = FORMAT_PLAIN;
+        }
+
+        return $qo;
     }
 
     // Overwrite this method from xml import.
