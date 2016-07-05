@@ -48,6 +48,25 @@ class qformat_glossary extends qformat_xml {
            $category = trim($category);
            $this->currentcategory = $category;
         }
+        if ($question->qtype == 'match') {
+            $subquestions = $question->options->subquestions;
+            foreach ($subquestions as $subquestion) {
+                $expout .= glossary_start_tag("ENTRY",3,true);
+                $expout .= glossary_full_tag("CONCEPT",4,false, trim($subquestion->answertext));
+                $expout .= glossary_full_tag("DEFINITION",4,false,$subquestion->questiontext);
+                $expout .= glossary_full_tag("FORMAT",4,false, $subquestion->questiontextformat);
+                $expout .= glossary_full_tag("TEACHERENTRY",4,false, $subquestion->questiontextformat);
+                $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4, $question->contextid, 'qtype_match', 'subquestion', $subquestion->id);
+                $expout .= glossary_start_tag("CATEGORIES",4,true);
+                $expout .= glossary_start_tag("CATEGORY",5,true);
+                $expout .= glossary_full_tag('NAME', 6, false, $this->currentcategory);
+                $expout .= glossary_full_tag('USEDYNALINK', 6, false, 0);
+                $expout .= glossary_end_tag("CATEGORY",5,true);
+                $expout .= glossary_end_tag("CATEGORIES",4,true);
+                $expout .= glossary_end_tag("ENTRY",3,true);
+            }
+
+        }
         if ($question->qtype == 'shortanswer' || $question->qtype == 'multichoice') {
             $expout .= glossary_start_tag("ENTRY",3,true);
             $answers = $question->options->answers;
@@ -86,7 +105,7 @@ class qformat_glossary extends qformat_xml {
                 $expout .= glossary_end_tag("ALIASES",4,false);
             }
 
-            $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4, $question->contextid, 'questiontext', $question->id);
+            $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4, $question->contextid, 'question', 'questiontext', $question->id);
             $expout .= glossary_start_tag("CATEGORIES",4,true);
             $expout .= glossary_start_tag("CATEGORY",5,true);
             $expout .= glossary_full_tag('NAME', 6, false, $this->currentcategory);
@@ -100,12 +119,23 @@ class qformat_glossary extends qformat_xml {
         return $expout;
     }
 
-    //  Duplicate function from glossary with component name changed to question.
-    function glossary_xml_export_files($tag, $taglevel, $contextid, $filearea, $itemid) {
+    //  Duplicate function from glossary with component name added as argument.
+    /**
+     * Prepares file area to export as part of XML export
+     *
+     * @param string $tag XML tag to use for the group
+     * @param int $taglevel
+     * @param int $contextid
+     * @param string $component
+     * @param string $filearea
+     * @param int $itemid
+     * @return string
+     */
+    function glossary_xml_export_files($tag, $taglevel, $contextid, $component, $filearea, $itemid) {
         $co = '';
         $fs = get_file_storage();
         if ($files = $fs->get_area_files(
-            $contextid, 'question', $filearea, $itemid, 'itemid,filepath,filename', false)) {
+            $contextid, $component, $filearea, $itemid, 'itemid,filepath,filename', false)) {
             $co .= glossary_start_tag($tag, $taglevel, true);
             foreach ($files as $file) {
                 $co .= glossary_start_tag('FILE', $taglevel + 1, true);
