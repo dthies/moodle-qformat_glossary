@@ -2,9 +2,9 @@ qformat_glossary
 ================
 
 This is a question format that enables Moodle quiz to read and write
-exported glossary entries.  Short answer and multiple choice
+exported glossary entries.  Short answer, multiple choice, and matcthing
 questions can be exported as glossary entries, and glossary entries may
-be imported into short answer questions in the question bank.
+be imported as short answer questions into the question bank.
 
 Copy this directory to question/format/glossary in Moodle directory. Login
 as admin to complete plugin installation.  Then select this format during
