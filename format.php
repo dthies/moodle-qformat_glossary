@@ -43,38 +43,39 @@ class qformat_glossary extends qformat_xml {
         global $CFG;
         $expout = '';
         if ($question->qtype == 'category') {
-           $category = preg_replace('/<\\/text>/', '', $this->writetext($question->category));
-           $category = preg_replace('/.*\\//', '', $category);
-           $category = trim($category);
-           $this->currentcategory = $category;
+            $category = preg_replace('/<\\/text>/', '', $this->writetext($question->category));
+            $category = preg_replace('/.*\\//', '', $category);
+            $category = trim($category);
+            $this->currentcategory = $category;
         }
         if ($question->qtype == 'match') {
             $subquestions = $question->options->subquestions;
             foreach ($subquestions as $subquestion) {
-                $expout .= glossary_start_tag("ENTRY",3,true);
-                $expout .= glossary_full_tag("CONCEPT",4,false, trim($subquestion->answertext));
-                $expout .= glossary_full_tag("DEFINITION",4,false,$subquestion->questiontext);
-                $expout .= glossary_full_tag("FORMAT",4,false, $subquestion->questiontextformat);
-                $expout .= glossary_full_tag("TEACHERENTRY",4,false, $subquestion->questiontextformat);
-                $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4, $question->contextid, 'qtype_match', 'subquestion', $subquestion->id);
-                $expout .= glossary_start_tag("CATEGORIES",4,true);
-                $expout .= glossary_start_tag("CATEGORY",5,true);
+                $expout .= glossary_start_tag("ENTRY", 3, true);
+                $expout .= glossary_full_tag("CONCEPT", 4, false, trim($subquestion->answertext));
+                $expout .= glossary_full_tag("DEFINITION", 4, false, $subquestion->questiontext);
+                $expout .= glossary_full_tag("FORMAT", 4, false, $subquestion->questiontextformat);
+                $expout .= glossary_full_tag("TEACHERENTRY", 4, false, $subquestion->questiontextformat);
+                $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4, $question->contextid,
+                    'qtype_match', 'subquestion', $subquestion->id);
+                $expout .= glossary_start_tag("CATEGORIES", 4, true);
+                $expout .= glossary_start_tag("CATEGORY", 5, true);
                 $expout .= glossary_full_tag('NAME', 6, false, $this->currentcategory);
                 $expout .= glossary_full_tag('USEDYNALINK', 6, false, 0);
-                $expout .= glossary_end_tag("CATEGORY",5,true);
-                $expout .= glossary_end_tag("CATEGORIES",4,true);
-                $expout .= glossary_end_tag("ENTRY",3,true);
+                $expout .= glossary_end_tag("CATEGORY", 5, true);
+                $expout .= glossary_end_tag("CATEGORIES", 4, true);
+                $expout .= glossary_end_tag("ENTRY", 3, true);
             }
 
         }
         if ($question->qtype == 'shortanswer' || $question->qtype == 'multichoice') {
-            $expout .= glossary_start_tag("ENTRY",3,true);
+            $expout .= glossary_start_tag("ENTRY", 3, true);
             $answers = $question->options->answers;
             reset($answers);
             // Concept is first right answer.
             while (current($answers)) {
                 if (current($answers)->fraction == 1) {
-                    $expout .= glossary_full_tag("CONCEPT",4,false, trim(current($answers)->answer));
+                    $expout .= glossary_full_tag("CONCEPT", 4, false, trim(current($answers)->answer));
                     next($answers);
                     break;
                 }
@@ -84,42 +85,42 @@ class qformat_glossary extends qformat_xml {
             $aliases = '';
             while (current($answers)) {
                 if (current($answers)->fraction == 1) {
-                    $aliases .= glossary_start_tag("ALIAS",5,true);
-                    $aliases .= glossary_full_tag("NAME",6,false,trim(current($answers)->answer));
-                    $aliases .= glossary_end_tag("ALIAS",5,true);
-
+                    $aliases .= glossary_start_tag("ALIAS", 5, true);
+                    $aliases .= glossary_full_tag("NAME", 6, false, trim(current($answers)->answer));
+                    $aliases .= glossary_end_tag("ALIAS", 5, true);
                 }
                 next($answers);
             }
 
-            $expout .= glossary_full_tag("DEFINITION",4,false,$question->questiontext);
-            $expout .= glossary_full_tag("FORMAT",4,false, $question->questiontextformat);
-            $expout .= glossary_full_tag("USEDYNALINK",4,false,get_config('core', 'glossary_linkentries'));
-            $expout .= glossary_full_tag("CASESENSITIVE",4,false,get_config('core', 'glossary_casesensitive'));
-            $expout .= glossary_full_tag("FULLMATCH",4,false,get_config('core', 'glossary_fullmatch'));
-            $expout .= glossary_full_tag("TEACHERENTRY",4,false, $question->questiontextformat);
+            $expout .= glossary_full_tag("DEFINITION", 4, false, $question->questiontext);
+            $expout .= glossary_full_tag("FORMAT", 4, false, $question->questiontextformat);
+            $expout .= glossary_full_tag("USEDYNALINK", 4, false, get_config('core', 'glossary_linkentries'));
+            $expout .= glossary_full_tag("CASESENSITIVE", 4, false, get_config('core', 'glossary_casesensitive'));
+            $expout .= glossary_full_tag("FULLMATCH", 4, false, get_config('core', 'glossary_fullmatch'));
+            $expout .= glossary_full_tag("TEACHERENTRY", 4, false, $question->questiontextformat);
 
             if ($aliases) {
-                $expout .= glossary_start_tag("ALIASES",4,false);
+                $expout .= glossary_start_tag("ALIASES", 4, false);
                 $expout .= $aliases;
-                $expout .= glossary_end_tag("ALIASES",4,false);
+                $expout .= glossary_end_tag("ALIASES", 4, false);
             }
 
-            $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4, $question->contextid, 'question', 'questiontext', $question->id);
-            $expout .= glossary_start_tag("CATEGORIES",4,true);
-            $expout .= glossary_start_tag("CATEGORY",5,true);
+            $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4,
+                $question->contextid, 'question', 'questiontext', $question->id);
+            $expout .= glossary_start_tag("CATEGORIES", 4, true);
+            $expout .= glossary_start_tag("CATEGORY", 5, true);
             $expout .= glossary_full_tag('NAME', 6, false, $this->currentcategory);
             $expout .= glossary_full_tag('USEDYNALINK', 6, false, 0);
-            $expout .= glossary_end_tag("CATEGORY",5,true);
-            $expout .= glossary_end_tag("CATEGORIES",4,true);
+            $expout .= glossary_end_tag("CATEGORY", 5, true);
+            $expout .= glossary_end_tag("CATEGORIES", 4, true);
 
-            $expout .= glossary_end_tag("ENTRY",3,true);
+            $expout .= glossary_end_tag("ENTRY", 3, true);
 
         }
         return $expout;
     }
 
-    //  Duplicate function from glossary with component name added as argument.
+    // Duplicate function from glossary with component name added as argument.
     /**
      * Prepares file area to export as part of XML export
      *
@@ -131,7 +132,7 @@ class qformat_glossary extends qformat_xml {
      * @param int $itemid
      * @return string
      */
-    function glossary_xml_export_files($tag, $taglevel, $contextid, $component, $filearea, $itemid) {
+    protected function glossary_xml_export_files($tag, $taglevel, $contextid, $component, $filearea, $itemid) {
         $co = '';
         $fs = get_file_storage();
         if ($files = $fs->get_area_files(
@@ -153,17 +154,17 @@ class qformat_glossary extends qformat_xml {
         // Override to add xml headers and footers and the global glossary settings.
         $co  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
-        $co .= glossary_start_tag("GLOSSARY",0,true);
-        $co .= glossary_start_tag("INFO",1,true);
+        $co .= glossary_start_tag("GLOSSARY", 0, true);
+        $co .= glossary_start_tag("INFO", 1, true);
 
-        $co .= glossary_start_tag("ENTRIES",2,true);
+        $co .= glossary_start_tag("ENTRIES", 2, true);
 
         $co .= $content;
 
-        $co .= glossary_end_tag("ENTRIES",2,true);
+        $co .= glossary_end_tag("ENTRIES", 2, true);
 
-        $co .= glossary_end_tag("INFO",1,true);
-        $co .= glossary_end_tag("GLOSSARY",0,true);
+        $co .= glossary_end_tag("INFO", 1, true);
+        $co .= glossary_end_tag("GLOSSARY", 0, true);
         return $co;
     }
 
@@ -180,16 +181,16 @@ class qformat_glossary extends qformat_xml {
         raise_memory_limit(MEMORY_EXTRA);
 
         global $CFG;
-        require_once $CFG->libdir . "/xmlize.php";
+        require_once($CFG->libdir . "/xmlize.php");
 
         $xml = xmlize($lines, 0);
 
         if ($xml) {
             $xmlentries = $xml['GLOSSARY']['#']['INFO'][0]['#']['ENTRIES'][0]['#']['ENTRY'];
-            $sizeofxmlentries = sizeof($xmlentries);
+            $sizeofxmlentries = count($xmlentries);
 
             // Iterate through glossary entries.
-            for($i = 0; $i < $sizeofxmlentries; $i++) {
+            for ($i = 0; $i < $sizeofxmlentries; $i++) {
                 // Extract entry information.
                 $xmlentry = $xmlentries[$i];
 
@@ -219,7 +220,7 @@ class qformat_glossary extends qformat_xml {
         return array_merge($uncategorizedquestions, $categorizedquestions);
     }
 
-    function import_headers($xmlentry) {
+    protected function import_headers($xmlentry) {
         $concept = trim(trusttext_strip($xmlentry['#']['CONCEPT'][0]['#']));
         $definition = trusttext_strip($xmlentry['#']['DEFINITION'][0]['#']);
         $format = trusttext_strip($xmlentry['#']['FORMAT'][0]['#']);
@@ -249,9 +250,9 @@ class qformat_glossary extends qformat_xml {
         }
 
         // If there are aliases, add these as alternate answers.
-        $xmlaliases = @$xmlentry['#']['ALIASES'][0]['#']['ALIAS']; // ignore missing ALIASES
-        $sizeofxmlaliases = sizeof($xmlaliases);
-        for($k = 0; $k < $sizeofxmlaliases; $k++) {
+        $xmlaliases = @$xmlentry['#']['ALIASES'][0]['#']['ALIAS']; // Ignore missing ALIASES.
+        $sizeofxmlaliases = count($xmlaliases);
+        for ($k = 0; $k < $sizeofxmlaliases; $k++) {
             $xmlalias = $xmlaliases[$k];
             $aliasname = trim(trusttext_strip($xmlalias['#']['NAME'][0]['#']));
             $qo->answer[$k + 1] = $aliasname;
