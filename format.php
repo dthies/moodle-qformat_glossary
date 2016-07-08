@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/question/format/xml/format.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qformat_glossary extends qformat_xml {
-    // Current category.
+    /** @var string current category at start of import */
     public $currentcategory = '';
 
     // Overwrite export methods.
@@ -220,7 +220,7 @@ class qformat_glossary extends qformat_xml {
         return array_merge($uncategorizedquestions, $categorizedquestions);
     }
 
-    protected function import_headers($xmlentry) {
+    public function import_headers($xmlentry) {
         $concept = trim(trusttext_strip($xmlentry['#']['CONCEPT'][0]['#']));
         $definition = trusttext_strip($xmlentry['#']['DEFINITION'][0]['#']);
         $format = trusttext_strip($xmlentry['#']['FORMAT'][0]['#']);
