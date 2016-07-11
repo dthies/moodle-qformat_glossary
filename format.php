@@ -95,7 +95,11 @@ class qformat_glossary extends qformat_xml {
             $expout .= glossary_full_tag("DEFINITION", 4, false, $question->questiontext);
             $expout .= glossary_full_tag("FORMAT", 4, false, $question->questiontextformat);
             $expout .= glossary_full_tag("USEDYNALINK", 4, false, get_config('core', 'glossary_linkentries'));
-            $expout .= glossary_full_tag("CASESENSITIVE", 4, false, get_config('core', 'glossary_casesensitive'));
+            if (isset($question->options) && isset($question->options->usecase)) {
+                $expout .= glossary_full_tag("CASESENSITIVE", 4, false, $question->options->usecase);
+            } else {
+                $expout .= glossary_full_tag("CASESENSITIVE", 4, false, get_config('core', 'glossary_casesensitive'));
+            }
             $expout .= glossary_full_tag("FULLMATCH", 4, false, get_config('core', 'glossary_fullmatch'));
             $expout .= glossary_full_tag("TEACHERENTRY", 4, false, $question->questiontextformat);
 
@@ -224,6 +228,7 @@ class qformat_glossary extends qformat_xml {
         $concept = trim(trusttext_strip($xmlentry['#']['CONCEPT'][0]['#']));
         $definition = trusttext_strip($xmlentry['#']['DEFINITION'][0]['#']);
         $format = trusttext_strip($xmlentry['#']['FORMAT'][0]['#']);
+        $usecase = trusttext_strip($xmlentry['#']['CASESENSITIVE'][0]['#']);
 
         // Create short answer question object from entry data.
         $qo = $this->defaultquestion();
@@ -240,6 +245,7 @@ class qformat_glossary extends qformat_xml {
             $qo->name = s(substr(utf8_decode(html_to_text($definition)), 0, 50));
         }
         $qo->answer[0] = $concept;
+        $qo->usecase = $usecase;
         $qo->fraction[0] = 1;
         $qo->feedback[0] = array();
         $qo->feedback[0]['text'] = '';
