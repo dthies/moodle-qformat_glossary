@@ -35,8 +35,11 @@ require_once($CFG->dirroot . '/question/format/xml/format.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qformat_glossary extends qformat_xml {
-    /** @var string current category at start of import */
+    /** @var string current category */
     public $currentcategory = '';
+
+    /** @var string top question category used as name of exported glossary */
+    public $name = null;
 
     // Overwrite export methods.
     public function writequestion($question) {
@@ -46,7 +49,9 @@ class qformat_glossary extends qformat_xml {
             $category = preg_replace('/<\\/text>/', '', $this->writetext($question->category));
             $category = preg_replace('/.*\\//', '', $category);
             $category = trim($category);
-            $this->currentcategory = $category;
+            if (empty($this->name)) {
+                $this->name = $category;
+            }
         }
         if ($question->qtype == 'match') {
             $subquestions = $question->options->subquestions;
@@ -160,6 +165,19 @@ class qformat_glossary extends qformat_xml {
 
         $co .= glossary_start_tag("GLOSSARY", 0, true);
         $co .= glossary_start_tag("INFO", 1, true);
+        $co .= glossary_full_tag("NAME", 2, false, $this->name);
+
+        $co .= glossary_full_tag("INTRO", 2, true);
+        $co .= glossary_full_tag("INTROFORMAT", 2, false, 1);
+        $co .= glossary_full_tag("ALLOWDUPLICATEDENTRIES", 2, false, get_config('core', 'glossary_dupentries'));
+        $co .= glossary_full_tag("DISPLAYFORMAT", 2, false, get_config('core', 'glossary_displayformat'));
+        $co .= glossary_full_tag("SHOWSPECIAL", 2, false, 1);
+        $co .= glossary_full_tag("SHOWALPHABET", 2, false, 1);
+        $co .= glossary_full_tag("SHOWALL", 2, false, 1);
+        $co .= glossary_full_tag("USEDYNALINK", 2, false, get_config('core', 'glossary_linkbydefault'));
+        $co .= glossary_full_tag("DEFAULTAPPROVAL", 2, false, get_config('core', 'glossary_defaultapproval'));
+        $co .= glossary_full_tag("GLOBALGLOSSARY", 2, false, 0);
+        $co .= glossary_full_tag("ENTBYPAGE", 2, false, get_config('core', 'glossary_entbypage'));
 
         $co .= glossary_start_tag("ENTRIES", 2, true);
 
