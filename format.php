@@ -49,6 +49,7 @@ class qformat_glossary extends qformat_xml {
             $category = preg_replace('/<\\/text>/', '', $this->writetext($question->category));
             $category = preg_replace('/.*\\//', '', $category);
             $category = trim($category);
+            $this->currentcategory = $category;
             if (empty($this->name)) {
                 $this->name = $category;
             }
@@ -73,7 +74,8 @@ class qformat_glossary extends qformat_xml {
             }
 
         }
-        if ($question->qtype == 'shortanswer' || $question->qtype == 'multichoice') {
+        if ($question->qtype == 'shortanswer' ||
+                ($question->qtype == 'multichoice' && !empty($question->options->single))) {
             $expout .= glossary_start_tag("ENTRY", 3, true);
             $answers = $question->options->answers;
             reset($answers);
@@ -164,10 +166,9 @@ class qformat_glossary extends qformat_xml {
         $co  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
         $co .= glossary_start_tag("GLOSSARY", 0, true);
-        $co .= glossary_start_tag("INFO", 1, true);
+        $co .= glossary_start_tag("INFO", 2, true);
         $co .= glossary_full_tag("NAME", 2, false, $this->name);
-
-        $co .= glossary_full_tag("INTRO", 2, true);
+        $co .= glossary_full_tag("INTRO", 2, false);
         $co .= glossary_full_tag("INTROFORMAT", 2, false, 1);
         $co .= glossary_full_tag("ALLOWDUPLICATEDENTRIES", 2, false, get_config('core', 'glossary_dupentries'));
         $co .= glossary_full_tag("DISPLAYFORMAT", 2, false, get_config('core', 'glossary_displayformat'));

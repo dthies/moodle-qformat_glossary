@@ -33,5 +33,5 @@ Feature: Test importing questions from Moodle glossary export.
     And I navigate to "Export" node in "Course administration > Question bank"
     And I set the field "id_format_glossary" to "1"
     And I press "Export questions to file"
-    And following "click here" should download between "6000" and "7000" bytes
+    And following "click here" should download between "6500" and "7500" bytes
 
