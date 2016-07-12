@@ -166,7 +166,7 @@ class qformat_glossary extends qformat_xml {
         $co  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
         $co .= glossary_start_tag("GLOSSARY", 0, true);
-        $co .= glossary_start_tag("INFO", 2, true);
+        $co .= glossary_start_tag("INFO", 1, true);
         $co .= glossary_full_tag("NAME", 2, false, $this->name);
         $co .= glossary_full_tag("INTRO", 2, false);
         $co .= glossary_full_tag("INTROFORMAT", 2, false, 1);
