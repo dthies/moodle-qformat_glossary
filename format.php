@@ -171,10 +171,11 @@ class qformat_glossary extends qformat_xml {
         $co .= glossary_full_tag("INTRO", 2, false);
         $co .= glossary_full_tag("INTROFORMAT", 2, false, 1);
         $co .= glossary_full_tag("ALLOWDUPLICATEDENTRIES", 2, false, get_config('core', 'glossary_dupentries'));
-        $co .= glossary_full_tag("DISPLAYFORMAT", 2, false, get_config('core', 'glossary_displayformat'));
+        $co .= glossary_full_tag("DISPLAYFORMAT", 2, false, 'dictionary');
         $co .= glossary_full_tag("SHOWSPECIAL", 2, false, 1);
         $co .= glossary_full_tag("SHOWALPHABET", 2, false, 1);
         $co .= glossary_full_tag("SHOWALL", 2, false, 1);
+        $co .= glossary_full_tag("ALLOWCOMMENTS", 2, false, 1);
         $co .= glossary_full_tag("USEDYNALINK", 2, false, get_config('core', 'glossary_linkbydefault'));
         $co .= glossary_full_tag("DEFAULTAPPROVAL", 2, false, get_config('core', 'glossary_defaultapproval'));
         $co .= glossary_full_tag("GLOBALGLOSSARY", 2, false, 0);
