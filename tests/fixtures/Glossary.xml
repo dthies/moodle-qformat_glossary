@@ -17,12 +17,23 @@
     <ENTRIES>
       <ENTRY>
         <CONCEPT>Quiz</CONCEPT>
-        <DEFINITION>An activity in Moodle in which learners may attempt questions in a variety of formats.&lt;br&gt;&lt;a href=&quot;https://moodle.org/about/&quot;&gt;&lt;img src=&quot;@@PLUGINFILE@@/moodlelogo-med.png&quot; alt=&quot;Moodle logo&quot; role=&quot;presentation&quot; style=&quot;&quot; class=&quot;img-responsive&quot; height=&quot;61&quot; width=&quot;204&quot;&gt;&lt;/a&gt;&lt;br&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</DEFINITION>
+        <DEFINITION>An activity in Moodle in which learners may attempt questions in a variety of formats.&lt;br /&gt;&lt;a href=&quot;https://moodle.org/about/&quot;&gt;&lt;img src=&quot;@@PLUGINFILE@@/moodlelogo-med.png&quot; alt=&quot;Moodle logo&quot; class=&quot;img-responsive&quot; height=&quot;61&quot; width=&quot;204&quot; /&gt;&lt;/a&gt;&lt;br /&gt;&lt;p&gt;&lt;br /&gt;&lt;/p&gt;</DEFINITION>
         <FORMAT>1</FORMAT>
         <USEDYNALINK>1</USEDYNALINK>
         <CASESENSITIVE>1</CASESENSITIVE>
         <FULLMATCH>1</FULLMATCH>
         <TEACHERENTRY>1</TEACHERENTRY>
+        <ALIASES>
+          <ALIAS>
+            <NAME>Test</NAME>
+          </ALIAS>
+        </ALIASES>
+        <CATEGORIES>
+          <CATEGORY>
+            <NAME>Vocabulary</NAME>
+            <USEDYNALINK>0</USEDYNALINK>
+          </CATEGORY>
+        </CATEGORIES>
         <ENTRYFILES>
           <FILE>
             <FILENAME>moodlelogo-med.png</FILENAME>

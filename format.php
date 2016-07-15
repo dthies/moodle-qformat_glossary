@@ -62,14 +62,14 @@ class qformat_glossary extends qformat_xml {
                 $expout .= glossary_full_tag("DEFINITION", 4, false, $subquestion->questiontext);
                 $expout .= glossary_full_tag("FORMAT", 4, false, $subquestion->questiontextformat);
                 $expout .= glossary_full_tag("TEACHERENTRY", 4, false, $subquestion->questiontextformat);
-                $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4, $question->contextid,
-                    'qtype_match', 'subquestion', $subquestion->id);
                 $expout .= glossary_start_tag("CATEGORIES", 4, true);
                 $expout .= glossary_start_tag("CATEGORY", 5, true);
                 $expout .= glossary_full_tag('NAME', 6, false, $this->currentcategory);
                 $expout .= glossary_full_tag('USEDYNALINK', 6, false, 0);
                 $expout .= glossary_end_tag("CATEGORY", 5, true);
                 $expout .= glossary_end_tag("CATEGORIES", 4, true);
+                $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4, $question->contextid,
+                    'qtype_match', 'subquestion', $subquestion->id);
                 $expout .= glossary_end_tag("ENTRY", 3, true);
             }
 
@@ -111,19 +111,19 @@ class qformat_glossary extends qformat_xml {
             $expout .= glossary_full_tag("TEACHERENTRY", 4, false, $question->questiontextformat);
 
             if ($aliases) {
-                $expout .= glossary_start_tag("ALIASES", 4, false);
+                $expout .= glossary_start_tag("ALIASES", 4, true);
                 $expout .= $aliases;
-                $expout .= glossary_end_tag("ALIASES", 4, false);
+                $expout .= glossary_end_tag("ALIASES", 4, true);
             }
 
-            $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4,
-                $question->contextid, 'question', 'questiontext', $question->id);
             $expout .= glossary_start_tag("CATEGORIES", 4, true);
             $expout .= glossary_start_tag("CATEGORY", 5, true);
             $expout .= glossary_full_tag('NAME', 6, false, $this->currentcategory);
             $expout .= glossary_full_tag('USEDYNALINK', 6, false, 0);
             $expout .= glossary_end_tag("CATEGORY", 5, true);
             $expout .= glossary_end_tag("CATEGORIES", 4, true);
+            $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4,
+                $question->contextid, 'question', 'questiontext', $question->id);
 
             $expout .= glossary_end_tag("ENTRY", 3, true);
 
@@ -175,7 +175,7 @@ class qformat_glossary extends qformat_xml {
         $co .= glossary_full_tag("SHOWSPECIAL", 2, false, 1);
         $co .= glossary_full_tag("SHOWALPHABET", 2, false, 1);
         $co .= glossary_full_tag("SHOWALL", 2, false, 1);
-        $co .= glossary_full_tag("ALLOWCOMMENTS", 2, false, 1);
+        $co .= glossary_full_tag("ALLOWCOMMENTS", 2, false, 0);
         $co .= glossary_full_tag("USEDYNALINK", 2, false, get_config('core', 'glossary_linkbydefault'));
         $co .= glossary_full_tag("DEFAULTAPPROVAL", 2, false, get_config('core', 'glossary_defaultapproval'));
         $co .= glossary_full_tag("GLOBALGLOSSARY", 2, false, 0);
