@@ -38,9 +38,6 @@ class qformat_glossary extends qformat_xml {
     /** @var string current category */
     public $currentcategory = '';
 
-    /** @var string top question category used as name of exported glossary */
-    public $name = null;
-
     // Overwrite export methods.
     public function writequestion($question) {
         global $CFG;
@@ -50,9 +47,6 @@ class qformat_glossary extends qformat_xml {
             $category = preg_replace('/.*\\//', '', $category);
             $category = trim($category);
             $this->currentcategory = $category;
-            if (empty($this->name)) {
-                $this->name = $category;
-            }
         }
         if ($question->qtype == 'match') {
             $subquestions = $question->options->subquestions;
@@ -167,8 +161,8 @@ class qformat_glossary extends qformat_xml {
 
         $co .= glossary_start_tag("GLOSSARY", 0, true);
         $co .= glossary_start_tag("INFO", 1, true);
-        $co .= glossary_full_tag("NAME", 2, false, $this->name);
-        $co .= glossary_full_tag("INTRO", 2, false);
+        $co .= glossary_full_tag("NAME", 2, false, $this->category->name);
+        $co .= glossary_full_tag("INTRO", 2, false, $this->category->info);
         $co .= glossary_full_tag("INTROFORMAT", 2, false, 1);
         $co .= glossary_full_tag("ALLOWDUPLICATEDENTRIES", 2, false, get_config('core', 'glossary_dupentries'));
         $co .= glossary_full_tag("DISPLAYFORMAT", 2, false, 'dictionary');
