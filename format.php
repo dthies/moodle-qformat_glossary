@@ -163,7 +163,7 @@ class qformat_glossary extends qformat_xml {
         $co .= glossary_start_tag("INFO", 1, true);
         $co .= glossary_full_tag("NAME", 2, false, $this->category->name);
         $co .= glossary_full_tag("INTRO", 2, false, $this->category->info);
-        $co .= glossary_full_tag("INTROFORMAT", 2, false, 1);
+        $co .= glossary_full_tag("INTROFORMAT", 2, false, $this->category->infoformat);
         $co .= glossary_full_tag("ALLOWDUPLICATEDENTRIES", 2, false, get_config('core', 'glossary_dupentries'));
         $co .= glossary_full_tag("DISPLAYFORMAT", 2, false, 'dictionary');
         $co .= glossary_full_tag("SHOWSPECIAL", 2, false, 1);
