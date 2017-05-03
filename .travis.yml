@@ -7,21 +7,16 @@ cache:
     - $HOME/.composer/cache
 
 php:
- - 5.6
  - 7.0
- - 7.1
 
 addons:
   postgresql: "9.3"
 
 env:
  matrix:
-  - DB=pgsql MOODLE_BRANCH=MOODLE_30_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_32_STABLE
-  - DB=mysqli MOODLE_BRANCH=MOODLE_32_STABLE
-  - DB=mysqli MOODLE_BRANCH=master
-  - DB=pgsql MOODLE_BRANCH=master
+  - DB=pgsql MOODLE_BRANCH=c1
+  - DB=pgsql MOODLE_BRANCH=c2
+  - DB=pgsql MOODLE_BRANCH=c3
  
 matrix:
  exclude:
