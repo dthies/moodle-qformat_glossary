@@ -14,9 +14,9 @@ addons:
 
 env:
  matrix:
-  - DB=pgsql MOODLE_BRANCH=c1
-  - DB=pgsql MOODLE_BRANCH=c2
-  - DB=pgsql MOODLE_BRANCH=c3
+  - MOODLE_REPO=git://github.com/moodle/moodle.git DB=pgsql MOODLE_BRANCH=c1
+  - MOODLE_REPO=git://github.com/moodle/moodle.git DB=pgsql MOODLE_BRANCH=c2
+  - MOODLE_REPO=git://github.com/moodle/moodle.git DB=pgsql MOODLE_BRANCH=c3
  
 matrix:
  exclude:
