@@ -123,6 +123,16 @@ class qformat_glossary extends qformat_xml {
             $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4,
                 $question->contextid, 'question', 'questiontext', $question->id);
 
+            // Write the question tags.
+            $tags = core_tag_tag::get_item_tags_array('core_question', 'question', $question->id);
+            if (!empty($tags)) {
+                $expout .= glossary_start_tag("TAGS", 4);
+                foreach ($tags as $tag) {
+                    $expout .= glossary_full_tag ("TAG", 5, false, $tag);
+                }
+                $expout .= glossary_end_tag("TAGS", 4);
+            }
+
             $expout .= glossary_end_tag("ENTRY", 3, true);
 
         }
@@ -286,6 +296,9 @@ class qformat_glossary extends qformat_xml {
             $qo->feedback[$k + 1]['format'] = FORMAT_PLAIN;
         }
 
+        // Read the question tags.
+        $this->import_question_tags($qo, $xmlentry);
+
         return $qo;
     }
 
@@ -334,6 +347,26 @@ class qformat_glossary extends qformat_xml {
             $filepaths[] = $fullpath;
         }
         return $itemid;
+    }
+
+    /**
+     * Import all the glossary tags as question tags
+     *
+     * @param object $qo the question data that is being constructed.
+     * @param array $xmlentry The xml representing the glossary entry.
+     * @return array of objects representing the tags in the file.
+     */
+    public function import_question_tags($qo, $xmlentry) {
+
+        if (core_tag_tag::is_enabled('core_question', 'question')
+            && array_key_exists('TAGS', $xmlentry['#'])
+            && !empty($xmlentry['#']['TAGS'][0]['#']['TAG'])) {
+            $qo->tags = array();
+            foreach ($xmlentry['#']['TAGS'][0]['#']['TAG'] as $tagdata) {
+                $qo->tags[] = $tagdata['#'];
+            }
+            return $qo->tags;
+        }
     }
 
 }
