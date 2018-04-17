@@ -10,15 +10,14 @@ cache:
 
 php:
  - 5.6
- - 7.0
  - 7.1
+ - 7.2
 
 addons:
   postgresql: "9.3"
 
 env:
  matrix:
-  - DB=pgsql MOODLE_BRANCH=MOODLE_30_STABLE
   - DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
   - DB=pgsql MOODLE_BRANCH=MOODLE_32_STABLE
   - DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE
@@ -29,10 +28,14 @@ env:
  
 matrix:
  exclude:
-  - env: DB=pgsql MOODLE_BRANCH=MOODLE_30_STABLE
-    php: 7.1
   - env: DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
     php: 7.1
+  - env: DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
+    php: 7.2
+  - env: DB=pgsql MOODLE_BRANCH=MOODLE_32_STABLE
+    php: 7.2
+  - env: DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE
+    php: 7.2
   - env: DB=pgsql MOODLE_BRANCH=MOODLE_34_STABLE
     php: 5.6
   - env: DB=mysqli MOODLE_BRANCH=MOODLE_34_STABLE
