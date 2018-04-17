@@ -124,8 +124,7 @@ class qformat_glossary extends qformat_xml {
                 $question->contextid, 'question', 'questiontext', $question->id);
 
             // Write the question tags.
-            $tags = core_tag_tag::get_item_tags_array('core_question', 'question', $question->id);
-            if (!empty($tags)) {
+            if ((get_config('core', 'version') >= 2016120503) && ($tags = core_tag_tag::get_item_tags_array('core_question', 'question', $question->id))) {
                 $expout .= glossary_start_tag("TAGS", 4);
                 foreach ($tags as $tag) {
                     $expout .= glossary_full_tag ("TAG", 5, false, $tag);
@@ -357,6 +356,10 @@ class qformat_glossary extends qformat_xml {
      * @return array of objects representing the tags in the file.
      */
     public function import_question_tags($qo, $xmlentry) {
+
+        if (get_config('core', 'version') < 2016120503) {
+            return;
+        }
 
         if (core_tag_tag::is_enabled('core_question', 'question')
             && array_key_exists('TAGS', $xmlentry['#'])
