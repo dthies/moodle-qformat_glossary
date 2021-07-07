@@ -39,6 +39,13 @@ class qformat_glossary extends qformat_xml {
     public $currentcategory = '';
 
     // Overwrite export methods.
+
+    /**
+     * Turns question into an xml segment
+     *
+     * @param object $question the question data.
+     * @return string xml segment
+     */
     public function writequestion($question) {
         global $CFG;
         $expout = '';
@@ -169,6 +176,12 @@ class qformat_glossary extends qformat_xml {
         return $co;
     }
 
+    /**
+     * Add head and foot to xml file
+     *
+     * @param string $content xml for entries
+     * @return string processed output text
+     */
     protected function presave_process($content) {
         // Override to add xml headers and footers and the global glossary settings.
         $co  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -201,6 +214,12 @@ class qformat_glossary extends qformat_xml {
     }
 
     // Overwrite import methods.
+    /**
+     * Parses an array of lines into an array of questions
+     *
+     * @param array $lines array of lines of file
+     * @return array question objects
+     */
     public function readquestions($lines) {
         $uncategorizedquestions = array();
         $categorizedquestions = array();
@@ -253,6 +272,12 @@ class qformat_glossary extends qformat_xml {
         return array_merge($uncategorizedquestions, $categorizedquestions);
     }
 
+    /**
+     * Creates the question object from an entry in the xml import array
+     *
+     * @param array $xmlentry The import of the entry exm
+     * @return object question object
+     */
     public function import_headers($xmlentry) {
         $concept = trim(trusttext_strip($xmlentry['#']['CONCEPT'][0]['#']));
         $definition = trusttext_strip($xmlentry['#']['DEFINITION'][0]['#']);
@@ -304,6 +329,15 @@ class qformat_glossary extends qformat_xml {
     }
 
     // Overwrite this method from xml import.
+    /**
+     * process text string from xml file
+     *
+     * @param array $data bit of xml tree for entry
+     * @param array $path path array which is empty here
+     * @param string $defaultvalue default string
+     * @param string $defaultformat format to use
+     * @return string processed text.
+     */
     public function import_text_with_files($data, $path, $defaultvalue = '', $defaultformat = 'html') {
         $field  = array();
         $field['text'] = $this->getpath($data,
@@ -319,6 +353,12 @@ class qformat_glossary extends qformat_xml {
     }
 
     // Overwrite this method from xml import.
+    /**
+     * Save include files as draft
+     *
+     * @param array $xml bit of xml tree for entry
+     * @return int itemid for draft area
+     */
     public function import_files_as_draft($xml) {
         global $USER;
         if (empty($xml)) {
