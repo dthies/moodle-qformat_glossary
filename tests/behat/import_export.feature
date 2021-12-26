@@ -8,6 +8,9 @@ Feature: Test importing questions from Moodle glossary export.
     Given the following "courses" exist:
       | fullname | shortname | format |
       | Course 1 | C1        | topics |
+    And the following "activities" exist:
+      | activity | name   | course |
+      | quiz     | Quiz 1 | C1     |
     And the following "users" exist:
       | username | firstname |
       | teacher  | Teacher   |
@@ -15,7 +18,8 @@ Feature: Test importing questions from Moodle glossary export.
       | user    | course | role           |
       | teacher | C1     | editingteacher |
     And I log in as "teacher"
-    And I follow "C1"
+    And I am on the "Quiz 1" "quiz activity editing" page
+    And I press "Save and display"
 
   @javascript @_file_upload
   Scenario: import XML file of an export glossary
@@ -30,7 +34,9 @@ Feature: Test importing questions from Moodle glossary export.
     Then I should see "An activity"
 
     # Now export again.
-    And I follow "Export"
+    And I am on the "Quiz 1" "quiz activity editing" page
+    And I press "Save and display"
+    And I navigate to "Question bank > Export" in current page administration
     And I set the field "id_format_glossary" to "1"
     And I set the field "Export category" to "Vocabulary"
     And I press "Export questions to file"
