@@ -24,8 +24,6 @@
 
 namespace qformat_glossary\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Privacy Subsystem for qformat_glossary implementing null_provider.
  *
