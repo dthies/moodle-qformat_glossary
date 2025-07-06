@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/glossary/lib.php');
@@ -318,9 +317,9 @@ class qformat_glossary extends qformat_xml {
             []
         );
         $qo->questiontext = $questiontext['text'];
-        $qo->name = s(substr(mb_convert_encoding($definition, 'ISO-8859-1', 'UTF-8'), 0, 50));
+        $qo->name = s(shorten_text($definition, 50));
         if ($format == FORMAT_HTML) {
-            $qo->name = s(substr(mb_convert_encoding(html_to_text($definition), 'ISO-8859-1', 'UTF-8'), 0, 50));
+            $qo->name = s(shorten_text(html_to_text($definition), 50));
         }
         $qo->answer[0] = $concept;
         $qo->usecase = $usecase;
