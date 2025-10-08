@@ -25,8 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qformat_glossary';
-$plugin->version   = 2016072808;
+$plugin->version   = 2016072809;
 $plugin->release   = '1.0.3';
+$plugin->supported = [35, 501];
 
 $plugin->requires  = 2018051400;
 
