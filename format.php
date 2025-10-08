@@ -253,9 +253,19 @@ class qformat_glossary extends qformat_xml {
         raise_memory_limit(MEMORY_EXTRA);
 
         global $CFG;
-        require_once($CFG->libdir . "/xmlize.php");
 
-        $xml = xmlize($lines, 0);
+        try {
+            if (class_exists('\\core\\xml_parser')) {
+                $xml = (new \core\xml_parser())->parse($lines, 0, 'UTF-8', true);
+            } else {
+                require_once($CFG->libdir . "/xmlize.php");
+                $xml = xmlize($lines, 0);
+            }
+        } catch (xml_format_exception $e) {
+            $this->error($e->getMessage(), '');
+            return false;
+        }
+        unset($lines);
 
         if ($xml) {
             $xmlentries = @$xml['GLOSSARY']['#']['INFO'][0]['#']['ENTRIES'][0]['#']['ENTRY'];
